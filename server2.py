@@ -7,8 +7,11 @@ import urllib.request
 
 def Main():
 	port = 5000
-	host = socket.gethostname()
+	# Bind to all available interfaces.
+	host = ''
+#	host = socket.gethostname()
 	
+	print(port, host)
 
 
 	mySocket = socket.socket()
