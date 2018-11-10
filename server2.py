@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
-import time, keyboard, sys
+import time, sys
 from threading import Thread
 import urllib.request
 
@@ -38,11 +38,7 @@ def Main():
         for client in peers:
             client.get_connection().send(data.encode())
         if data.upper() == 'PLAY' or data.upper() == 'STOP':
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL))
             time.sleep(0.1)
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_SPACE))
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL, keyboard.KEYEVENTF_KEYUP),
-            keyboard.Keyboard(keyboard.VK_SPACE, keyboard.KEYEVENTF_KEYUP))
                 
 
     mySocket.close()
@@ -55,11 +51,7 @@ def listen(peer, peers):
         for client in peers:
             client.get_connection().send(data.encode())
         if data.upper() == 'PLAY' or data.upper() == 'STOP':
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL))
             time.sleep(0.1)
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_SPACE))
-            keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL, keyboard.KEYEVENTF_KEYUP),
-            keyboard.Keyboard(keyboard.VK_SPACE, keyboard.KEYEVENTF_KEYUP))
                     
           
             

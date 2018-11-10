@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
 import socket
-import keyboard
-import time, keyboard, sys
+import time, sys
 
 def Main():
         host = input("what is the host ip?")
@@ -20,12 +19,6 @@ def Main():
                     print("Waiting for message from server. Press Ctrl + c to send message")
                     data = mySocket.recv(1024).decode()
                     print ('Received from server: ' + data)
-                    if data.upper() == 'PLAY' or data.upper() == 'STOP':
-                        keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL))
-                        time.sleep(0.1)
-                        keyboard.SendInput(keyboard.Keyboard(keyboard.VK_SPACE))
-                        keyboard.SendInput(keyboard.Keyboard(keyboard.VK_CONTROL, keyboard.KEYEVENTF_KEYUP),
-                        keyboard.Keyboard(keyboard.VK_SPACE, keyboard.KEYEVENTF_KEYUP))
             except KeyboardInterrupt:
                 pass
             message = input("message (q to quit)")
@@ -34,8 +27,6 @@ def Main():
             send = message.upper()
             print ("sending: " + str(send))
             mySocket.send(send.encode())
-            
-                
 
         mySocket.close()
 
