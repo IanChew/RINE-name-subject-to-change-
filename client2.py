@@ -27,7 +27,7 @@ def Main():
 			print("sending:", str(send))
 			mySocket.send(send.encode())
 
-			print("Waiting for message from server. Press Ctrl + c to send message")
+			print("Waiting for message from server...")
 			data = mySocket.recv(1024).decode()
 			print('Received from server:', data)
 
