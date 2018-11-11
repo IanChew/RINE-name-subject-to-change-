@@ -3,14 +3,56 @@
 import socket
 import time, sys
 import threading
+import struct
 
 # Blocks on input from the server.
 def input_thread(mySocket):
 	while True:
-#		print("Waiting for message from server...")
-		data = mySocket.recv(1024).decode()
-		print(data)
-#		print('Received from server:', data)
+		# First byte is the command byte.
+		# 2 - Receive message
+		# 3 - Receive file.
+		data = mySocket.recv(1)
+		if data[0] == 2:
+			# Read a message.
+			data = mySocket.recv(1024).decode()
+			print(data)
+#			print('Received from server:', data)
+		elif data[0] == 3:
+			# We're getting a file.
+			# First we get 1 byte denoting the
+			# username of the person that sent it.
+			usersize = mySocket.recv(1)[0]
+			# Then we get usersize bytes containing the username.
+			username = mySocket.recv(usersize).decode()
+
+			# First we get 2 bytes denoting the
+			# file name size.
+			fname_size_bytes = mySocket.recv(2)
+			# , unpacks the 1-tuple
+			fname_size, = struct.unpack("H", fname_size_bytes)
+			fname = mySocket.recv(fname_size).decode()
+			
+			# Next we get 8 bytes denoting the
+			# file size.
+			file_size_bytes = mySocket.recv(8)
+			file_size, = struct.unpack("Q", file_size_bytes)
+			file_bytes = mySocket.recv(file_size)
+
+			print("Received file", fname, "of size", file_size, "from",
+			      username)
+
+			# Write out the file to save it (dangerous,
+			# should prompt the user in the future).
+			# "xb" means open the file in binary mode
+			# and fail if the file already exists.
+			# This should make it slightly safer.
+			try:
+				with open(fname, "xb") as fp:
+					fp.write(file_bytes)
+			except FileExistsError as e:
+				print("Error: File", fname, "already exists")
+				print("No file written.")
+
 
 
 def Main():
@@ -40,27 +82,77 @@ def Main():
 		# Send the login command.
 		mySocket.send(to_send)
 
-
-#		message = ""
 		while True:
-#			try:
-#				while True:
-#					print("Waiting for message from server. Press Ctrl + c to send message")
-#					data = mySocket.recv(1024).decode()
-#					print ('Received from server: ' + data)
-#			except KeyboardInterrupt:
-#				pass
+			print("To enter messaging mode, enter m.")
+			print("To attach a file, enter a")
+			print("To quit, hit q")
+			mode = input()
+			if mode == 'm':
+				messaging_mode(mySocket)
+			elif mode == 'a':
+				attach_file(mySocket)
+			elif mode == 'q':
+				# End the program.
+				break;
+
+# While in messaging mode, the output thread executes here.
+def messaging_mode(mySocket):
+	try:
+		print("Messaging mode entered.")
+		print("To exit messaging mode, press CRTL + C.")
+		print("To send messages, simply type and hit enter.")
+		while True:
 			message = input() #"message (q to quit)\n")
-			if message == 'q':
-				break
-			send = message
-#			print("sending:", str(send))
+#			if message == 'q':
+#				break
+#			print("sending:", str(message))
 			# If the first byte is 0x02, we're sending a message.
 			command = b'\x02'
-			to_send = command + send.encode()
+			to_send = command + message.encode()
 			mySocket.send(to_send)
+	except KeyboardInterrupt:
+		pass
+	
+# Called when the user tries to send (attach) a file.
+def attach_file(mySocket):
+	# Make sure the filename isn't empty.
+	fname = ""
+	while not fname:
+		fname = input("Enter name of file to attach:\n")
+
+	try:
+		# Open the file in binary mode.
+		with open(fname, "rb") as fp:
+			data = fp.read()
+
+	except FileNotFoundError as e:
+		print("Error: Could not find file", fname)
+		# Do not continue with attaching a file.
+		return
+
+	# Now data contains the bytes of the file.
+	# We will not build up a byte string containg what we
+	# need to send.
+
+	# Command byte 3 means we're sending a file.
+	command = b'\x03'
+	# Binary filename.
+	bfname = fname.encode()
+	# Binary filename length, in a bytes string of size 2.
+	bfname_size = struct.pack("H", len(bfname))
+	# File size, in a bytes string of size 8.
+	fsize = struct.pack("Q", len(data))
+
+	# The protocol is that we send the command byte,
+	# then the file name's length (2 bytes), then the
+	# file name, then the file length (8 bytes),
+	# then the file's actual contents.
+	to_send = command + bfname_size + bfname + fsize + data
+
+	mySocket.sendall(to_send)
 
 
-		
+
+
 if __name__ == '__main__':
 	Main()
