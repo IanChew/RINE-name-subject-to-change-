@@ -14,7 +14,6 @@ def main():
 	host = 'localhost'
 	
 	print("Starting server on port", port)
-	print(port, host)
 
 	print('Your ip is :' , urllib.request.urlopen('https://ident.me/').read().decode('utf8'))
 
@@ -106,12 +105,24 @@ def input_thread(mySocket, inputs, users):
 				# Add the new user
 				users.append(user(conn, addr))
 
+				# Put the new user's socket inside the input list.
+				inputs.append(conn)
+
 			# s is a client that's already connected.
 			else:
-				data = s.read(1024)
-				print("Received", data.decode(), "from client.")
-				# Just echo the data for now.
-				s.send(data)
+				data = s.recv(4096)
+				if not data:
+					# If data is empty, the socket is closed.
+					print("Closing connection", s)
+
+					# We need to clean up our variables.
+					inputs.remove(s)
+					users.remove(*(user for user in users if user.get_connection() == s))
+					s.close()
+				else:
+					print("Received", data.decode(), "from client.")
+					# Just echo the data for now.
+					s.send(data)
 
 
 
