@@ -27,6 +27,16 @@ def Main():
 		# Start the input thread.
 		ithread.start()
 	
+		username = input("What is your username?\n")
+
+		# If the first byte is 0x01, we're sending a username login.
+		command = b'\x01'
+		to_send = command + username.encode()
+
+		# Send the login command.
+		mySocket.send(to_send)
+
+
 #		message = ""
 		while True:
 #			try:
@@ -39,9 +49,12 @@ def Main():
 			message = input() #"message (q to quit)\n")
 			if message == 'q':
 				break
-			send = message.upper()
+			send = message
 			print("sending:", str(send))
-			mySocket.send(send.encode())
+			# If the first byte is 0x02, we're sending a message.
+			command = b'\x02'
+			to_send = command + send.encode()
+			mySocket.send(to_send)
 
 
 		
