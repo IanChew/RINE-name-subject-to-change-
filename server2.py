@@ -11,7 +11,7 @@ def main():
 	# Non-reserved port.
 	port = 25505
 	# Bind to all available interfaces.
-	host = 'localhost'
+	host = ''
 	
 	print("Starting server on port", port)
 
