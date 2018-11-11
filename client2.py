@@ -9,12 +9,13 @@ def input_thread(mySocket):
 	while True:
 #		print("Waiting for message from server...")
 		data = mySocket.recv(1024).decode()
-		print('Received from server:', data)
+		print(data)
+#		print('Received from server:', data)
 
 
 def Main():
-	host = input("what is the host ip?\n")
-	port = 5000
+	host = input("What is the host ip?\n")
+	port = 25505
 	
 	with socket.socket() as mySocket:
 		mySocket.connect((host,port))
@@ -27,7 +28,10 @@ def Main():
 		# Start the input thread.
 		ithread.start()
 	
-		username = input("What is your username?\n")
+		username = ""
+		# Make sure we don't send an empty username.
+		while not username:
+			username = input("What is your username?\n")
 
 		# If the first byte is 0x01, we're sending a username login.
 		command = b'\x01'
@@ -50,7 +54,7 @@ def Main():
 			if message == 'q':
 				break
 			send = message
-			print("sending:", str(send))
+#			print("sending:", str(send))
 			# If the first byte is 0x02, we're sending a message.
 			command = b'\x02'
 			to_send = command + send.encode()

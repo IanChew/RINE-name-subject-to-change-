@@ -9,7 +9,7 @@ import select
 
 def main():
 	# Non-reserved port.
-	port = 5000
+	port = 25505
 	# Bind to all available interfaces.
 	host = 'localhost'
 	
@@ -126,7 +126,7 @@ def input_thread(mySocket, inputs, userdict):
 				if data[0] == 1:
 					# Get the username.
 					username = s.recv(1024).decode()
-					print("Connection", s, "assigned username", username)
+					print("Connection", s.getsockname(), "assigned username", username)
 					# Set the user's name.
 					userdict[s].set_name(username)
 				else:
@@ -137,7 +137,11 @@ def input_thread(mySocket, inputs, userdict):
 					print("Received", data.decode(), "from", username + ".")
 					# Send username: data
 					to_send = (username + ": " + data.decode()).encode()
-					s.send(to_send)
+
+					# We're going to send the message to every user, including
+					# the one who sent it.
+					for conn in userdict:
+						conn.send(to_send)
 
 
 
