@@ -118,12 +118,21 @@ def input_thread(mySocket, inputs, userdict):
 				data = s.recv(1)
 				if not data:
 					# If data is empty, the socket is closed.
-					print("Closing connection", s)
+					username = userdict[s].get_name()
+					print("Closing connection from", username)
+
 
 					# We need to clean up our variables.
 					inputs.remove(s)
 					del userdict[s]
 					s.close()
+
+					# Send everyone else a message that the
+					# user has disconnected.
+					to_send = b'\x02' + (username + " has disconnected.").encode()
+					for conn in userdict:
+						conn.send(to_send)
+
 					continue
 				if data[0] == 1:
 					# Get the username.
@@ -131,6 +140,12 @@ def input_thread(mySocket, inputs, userdict):
 					print("Connection", s.getsockname(), "assigned username", username)
 					# Set the user's name.
 					userdict[s].set_name(username)
+					# Send everyone else a message that the
+					# user has connected.
+					to_send = b'\x02' + (username + " has connected.").encode()
+					for conn in userdict:
+						if conn is not s:
+							conn.send(to_send)
 				elif data[0] == 2:
 					# Get the message
 					data = s.recv(4096)
