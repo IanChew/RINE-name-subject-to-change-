@@ -21,11 +21,11 @@
   * Let the user decide whether to even receive the file in the first place.
   * Let the user decide where to save the file.
   * Prevent the file from begin saved in unsafe places by default.
-
-* More robust file sharing.
+* Implement file persistance levels.
 * Persistence (database?).
   * Retrieving past messages from the server when the client wants them.
   * Sending messages to users that are offline.
+  * Have the server only send messages when the client asks for them.
 * Have the client send optional read notifications to the sender when the message is read.
 * Authentication (might need to come after persistance).
 * Synchronizing the clients when a user is logged in on the same username but on multiple computers.
