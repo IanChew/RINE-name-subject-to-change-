@@ -117,7 +117,7 @@ def input_thread(mySocket, inputs, userdict):
 				# 3 - Send file
 				try:
 					data = s.recv(1)
-				except TimeoutError:
+				except (TimeoutError, ConnectionResetError):
 					# User timed out, disconnect them.
 					data = b''
 				if not data:
