@@ -172,13 +172,13 @@ def input_thread(mySocket, inputs, userdict):
 # Keeps calling recv until we get length bytes.
 def recvall(sock, length):
 	retval = b''
-	conn.setblocking(1)
+	sock.setblocking(1)
 	while (length != 0):
 		data = sock.recv(length)
 		# Subtract the length read from the remaining length.
 		length -= len(data)
 		retval += data
-	conn.setblocking(0)
+	sock.setblocking(0)
 	return retval
 
 # Called when we're about to get an attached file.
