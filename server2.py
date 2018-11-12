@@ -115,7 +115,11 @@ def input_thread(mySocket, inputs, userdict):
 				# 1 - Username login
 				# 2 - Send message
 				# 3 - Send file
-				data = s.recv(1)
+				try:
+					data = s.recv(1)
+				except TimeoutError:
+					# User timed out, disconnect them.
+					data = b''
 				if not data:
 					# If data is empty, the socket is closed.
 					username = userdict[s].get_name()
