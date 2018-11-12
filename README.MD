@@ -32,9 +32,10 @@
 * Encryption (end-to-end).
 * Multiple chat rooms/private chats.
 * Self-destructing messages, that disappear after a certain amount of time.
+* Sending messages back in time. (D-Mail)
  * Once the server is persistent, we can also delete the message off the server.
 * GUI support.
-* Add support for colour based reply system with collapse and expand support.
+* Add support for colour based reply system with collapse and expand support. (Reading Steiner)
 * Thumbnail images with the option to download the full image.
 * Web/Mobile client.
 
