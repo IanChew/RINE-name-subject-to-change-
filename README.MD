@@ -34,6 +34,7 @@
 * Self-destructing messages, that disappear after a certain amount of time.
  * Once the server is persistent, we can also delete the message off the server.
 * GUI support.
+* Add support for colour based reply system with collapse and expand support.
 * Thumbnail images with the option to download the full image.
 * Web/Mobile client.
 
