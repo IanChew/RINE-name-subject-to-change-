@@ -36,7 +36,8 @@ def input_thread(mySocket):
 			# file size.
 			file_size_bytes = mySocket.recv(8)
 			file_size, = struct.unpack("Q", file_size_bytes)
-			file_bytes = mySocket.recv(file_size)
+			# Call recvall because the file might be big.
+			file_bytes = recvall(mySocket, file_size)
 
 			print("Received file", fname, "of size", file_size, "from",
 			      username)
@@ -152,6 +153,15 @@ def attach_file(mySocket):
 	mySocket.sendall(to_send)
 
 
+# Keeps calling recv until we get length bytes.
+def recvall(sock, length):
+	retval = b''
+	while (length != 0):
+		data = sock.recv(length)
+		# Subtract the length read from the remaining length.
+		length -= len(data)
+		retval += data
+	return retval
 
 
 if __name__ == '__main__':

@@ -168,6 +168,17 @@ def input_thread(mySocket, inputs, userdict):
 					print("Error: bad command byte from user",
 					      userdict[s].get_name())
 
+
+# Keeps calling recv until we get length bytes.
+def recvall(sock, length):
+	retval = b''
+	while (length != 0):
+		data = sock.recv(length)
+		# Subtract the length read from the remaining length.
+		length -= len(data)
+		retval += data
+	return retval
+
 # Called when we're about to get an attached file.
 def handle_attachment(s, userdict):
 	# Recieve protocol:
@@ -188,7 +199,9 @@ def handle_attachment(s, userdict):
 	# Contains the 8 bytes of the file size.
 	fsize, = struct.unpack("Q", fsize_bytes)
 	# Bytes string containing the file's data.
-	fbytes = s.recv(fsize)
+	# This might be big, so we're calling recvall to deal
+	# multiple packages.
+	fbytes = recvall(s, fsize)
 	
 	# User that send the file.
 	username = userdict[s].get_name()
@@ -214,8 +227,9 @@ def handle_attachment(s, userdict):
 	# Send the file to every other user.
 	for conn, usr in userdict.items():
 		if conn is not s:
+			conn.setblocking(1)
 			conn.sendall(to_send)
-
+			conn.setblocking(0)
 
 """
 def listen(peer, peers):
