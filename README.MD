@@ -6,6 +6,7 @@
 * Username setting.
 * Asynchronous sending and receiving in the client (buggy).
 * File sharing.
+  * Support for large files.
 * Some degree of graceful disconnecting.
 * Connection and disconnection messages.
 
@@ -15,7 +16,7 @@
 * Better handling of errors in general.
   * If the server disconnects, the client should exit with an error message instead of the input thread just dying.
 * Safer file sharing.
-  * Support for large files, since they currently crash the server.
+  * Support for large files handled asynchronously (client and server).
   * Let the user decide whether to save a file or not.
   * Let the user decide whether to even receive the file in the first place.
   * Let the user decide where to save the file.
