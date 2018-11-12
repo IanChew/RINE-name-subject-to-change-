@@ -21,6 +21,7 @@
   * Let the user decide whether to even receive the file in the first place.
   * Let the user decide where to save the file.
   * Prevent the file from begin saved in unsafe places by default.
+
 * More robust file sharing.
 * Persistence (database?).
   * Retrieving past messages from the server when the client wants them.
@@ -33,6 +34,7 @@
 * Self-destructing messages, that disappear after a certain amount of time.
  * Once the server is persistent, we can also delete the message off the server.
 * GUI support.
+* Add support for colour based reply system with collapse and expand support.
 * Thumbnail images with the option to download the full image.
 * Web/Mobile client.
 
