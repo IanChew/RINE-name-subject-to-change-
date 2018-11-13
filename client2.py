@@ -4,6 +4,7 @@ import socket
 import time, sys
 import threading
 import struct
+import readline
 
 # Blocks on input from the server.
 def input_thread(mySocket):
@@ -15,7 +16,11 @@ def input_thread(mySocket):
 		if data[0] == 2:
 			# Read a message.
 			data = mySocket.recv(1024).decode()
-			print(data)
+			buffer = readline.get_line_buffer()
+			if len(buffer) != 0:
+				print("\r" + data + "\n" + buffer , end='')
+			else:
+				print(data)
 #			print('Received from server:', data)
 		elif data[0] == 3:
 			# We're getting a file.
