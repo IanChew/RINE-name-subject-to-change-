@@ -9,9 +9,10 @@
   * Support for large files.
 * Some degree of graceful disconnecting.
 * Connection and disconnection messages.
+* Fixing the (visual) client bug where if you receive a message while typing one out, it interrupts your buffer.
+
 
 ### Future features (in rough order to implement them):
-* Fixing the (visual) client bug where if you receive a message while typing one out, it interrupts your buffer.
 * Protocol formalization.
 * Better handling of errors in general.
   * If the server disconnects, the client should exit with an error message instead of the input thread just dying.
