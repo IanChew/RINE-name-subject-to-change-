@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
-
+# Standard libraries
 import socket
 import time, sys
 import threading
 import struct
 import readline
+
+#Local libraries
+import basic_cli_io
+
+io = basic_cli_io.BasicCLIIO()
 
 # Blocks on input from the server.
 def input_thread(mySocket):
@@ -16,12 +21,9 @@ def input_thread(mySocket):
 		if data[0] == 2:
 			# Read a message.
 			data = mySocket.recv(1024).decode()
-			buffer = readline.get_line_buffer()
-			if len(buffer) != 0:
-				print("\r" + data + "\n" + buffer , end='')
-			else:
-				print(data)
-#			print('Received from server:', data)
+			# Display the message.
+			io.print(data)
+#			io.print('Received from server:', data)
 		elif data[0] == 3:
 			# We're getting a file.
 			# First we get 1 byte denoting the
@@ -44,7 +46,7 @@ def input_thread(mySocket):
 			# Call recvall because the file might be big.
 			file_bytes = recvall(mySocket, file_size)
 
-			print("Received file", fname, "of size", file_size, "from",
+			io.print("Received file", fname, "of size", file_size, "from",
 			      username)
 
 			# Write out the file to save it (dangerous,
@@ -56,18 +58,18 @@ def input_thread(mySocket):
 				with open(fname, "xb") as fp:
 					fp.write(file_bytes)
 			except FileExistsError as e:
-				print("Error: File", fname, "already exists")
-				print("No file written.")
+				io.print("Error: File", fname, "already exists")
+				io.print("No file written.")
 
 
 
 def Main():
-	host = input("What is the host ip?\n")
+	host = io.input("What is the host ip?\n")
 	port = 25505
 	
 	with socket.socket() as mySocket:
 		mySocket.connect((host,port))
-		print("Connected to the server at", host)
+		io.print("Connected to the server at", host)
 
 		# Start input_thread in a new thread.
 		ithread = threading.Thread(target=input_thread, args=(mySocket,))
@@ -79,7 +81,7 @@ def Main():
 		username = ""
 		# Make sure we don't send an empty username.
 		while not username:
-			username = input("What is your username?\n")
+			username = io.input("What is your username?\n")
 
 		# If the first byte is 0x01, we're sending a username login.
 		command = b'\x01'
@@ -89,10 +91,10 @@ def Main():
 		mySocket.send(to_send)
 
 		while True:
-			print("To enter messaging mode, enter m.")
-			print("To attach a file, enter a")
-			print("To quit, hit q")
-			mode = input()
+			io.print("To enter messaging mode, enter m.")
+			io.print("To attach a file, enter a")
+			io.print("To quit, hit q")
+			mode = io.input()
 			if mode == 'm':
 				messaging_mode(mySocket)
 			elif mode == 'a':
@@ -104,14 +106,14 @@ def Main():
 # While in messaging mode, the output thread executes here.
 def messaging_mode(mySocket):
 	try:
-		print("Messaging mode entered.")
-		print("To exit messaging mode, press CRTL + C.")
-		print("To send messages, simply type and hit enter.")
+		io.print("Messaging mode entered.")
+		io.print("To exit messaging mode, press CRTL + C.")
+		io.print("To send messages, simply type and hit enter.")
 		while True:
-			message = input() #"message (q to quit)\n")
+			message = io.input() #"message (q to quit)\n")
 #			if message == 'q':
 #				break
-#			print("sending:", str(message))
+#			io.print("sending:", str(message))
 			# If the first byte is 0x02, we're sending a message.
 			command = b'\x02'
 			to_send = command + message.encode()
@@ -124,7 +126,7 @@ def attach_file(mySocket):
 	# Make sure the filename isn't empty.
 	fname = ""
 	while not fname:
-		fname = input("Enter name of file to attach:\n")
+		fname = io.input("Enter name of file to attach:\n")
 
 	try:
 		# Open the file in binary mode.
@@ -132,7 +134,7 @@ def attach_file(mySocket):
 			data = fp.read()
 
 	except FileNotFoundError as e:
-		print("Error: Could not find file", fname)
+		io.print("Error: Could not find file", fname)
 		# Do not continue with attaching a file.
 		return
 

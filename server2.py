@@ -16,7 +16,10 @@ def main():
 	
 	print("Starting server on port", port)
 
-	print('Your ip is :' , urllib.request.urlopen('https://ident.me/').read().decode('utf8'))
+	try:
+		print('Your ip is :' , urllib.request.urlopen('https://ident.me/').read().decode('utf8'))
+	except:
+		print("WARNING: Could not find local IP. This possibly means the internet is not available.")
 
 	with socket.socket() as mySocket:
 		
